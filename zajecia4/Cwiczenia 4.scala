@@ -126,8 +126,8 @@ display(sum1)
 val average = tab.agg(avg("TaxAmt").as("TaxAvg"), avg("Freight").as("FreightAvg"))
 display(average)
 
-val std = tab.agg(stddev("TaxAmt").as("stdTaxAmt"), mean("TaxAmt").as("meanTaxAmt"))
-display(std)
+val mean2 = tab.agg(mean("TaxAmt").as("meanTaxAmt"), mean("TaxAmt").as("meanTaxAmt"))
+display(mean2)
 
 //3 funkcje agg()
 
@@ -145,3 +145,31 @@ val res = tab2.groupBy("ProductModelId", "Color", "ProductCategoryID")
 
 display(res)
 
+
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC zadanie 2
+
+// COMMAND ----------
+
+def Delete_underscore = udf((string: String) => (string.replaceAll("_", "")))
+val Pow = udf((x: Double) => x*x)
+val Sqrt =  udf((x: Double) => scala.math.sqrt(x))
+
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC zadanie 3
+
+// COMMAND ----------
+
+import org.apache.spark.sql.functions._
+var json1 = spark.read.option("multiline", "true")
+  .json("/FileStore/tables/brzydki.json")
+
+
+val json2 = json1.selectExpr("numberOfFeatures")
+display(json2)
