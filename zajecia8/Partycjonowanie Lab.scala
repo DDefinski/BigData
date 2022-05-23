@@ -77,4 +77,147 @@ df.rdd.getNumPartitions
 
 // COMMAND ----------
 
+val df = spark.read.format("csv")
+              .option("header","true")
+              .option("inferSchema","true")
+              .load("dbfs:/FileStore/tables/dane/movies.csv")
+
+// COMMAND ----------
+
+import org.apache.spark.sql.Column
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions._
+
+
+
+// COMMAND ----------
+
+display(df)
+
+// COMMAND ----------
+
+df.dtypes.foreach(f=>println(f._1+","+f._2))
+
+// COMMAND ----------
+
+//funkcja zliczająca sumę wartości w kolumnie
+
+def SumColumn(colName: String, df: DataFrame): Any={
+  if(!df.columns.contains(colName)){
+      println("There is no such column")
+      return 0
+  }
+  if(df.schema(colName).dataType.typeName == "string"){
+    println("This is string column")
+    return 0
+  }
+    return df.agg(sum(colName)).first.get(0)
+  
+}
+
+// COMMAND ----------
+
+SumColumn("duration",df)
+
+// COMMAND ----------
+
+//funkcja zliczająca nulle w kolumnie
+
+def CountNullColumn(colName : String, df :DataFrame) : Long ={
+  if(!df.columns.contains(colName))
+  {
+      println("There is no such column")
+      return 1
+  } 
+  return df.filter(col(colName).isNull).count()
+}
+
+// COMMAND ----------
+
+CountNullColumn("year",df)
+
+// COMMAND ----------
+
+//funkcja zliczająca wystąpienia poszczególnych wartości
+
+def CountOccurances(colName : String, df :DataFrame) : DataFrame ={
+  if(!df.columns.contains(colName)){
+      println("There is no such column")
+      return spark.emptyDataFrame
+  }
+  
+  return df.groupBy(colName).count()
+}
+
+// COMMAND ----------
+
+display(CountOccurances("year",df))
+
+// COMMAND ----------
+
+//funkcja zwracająca największą wartość liczbową z zadanej kolumny
+
+def GetMaxColValue(colName: String, df: DataFrame): Any={
+  if(!df.columns.contains(colName)){
+      println("There is no such column")
+      return 0
+  }
+  if(df.schema(colName).dataType.typeName == "string"){
+    println("This is string column")
+    return 0
+  }
+    return df.agg(max(colName)).first.get(0)
+  
+}
+
+// COMMAND ----------
+
+GetMaxColValue("duration",df)
+
+// COMMAND ----------
+
+//funkcja zwracająca najmniejszą wartość liczbową z zadanej kolumny
+
+def GetMinColValue(colName: String, df: DataFrame): Any={
+  if(!df.columns.contains(colName)){
+      println("There is no such column")
+      return 0
+  }
+  if(df.schema(colName).dataType.typeName == "string"){
+    println("This is string column")
+    return 0
+  }
+    return df.agg(max(colName)).first.get(0)
+  
+}
+
+// COMMAND ----------
+
+GetMinColValue("duration",df)
+
+// COMMAND ----------
+
+//funkcja zwracająca średnią wartość liczbową z zadanej kolumny
+
+def CountColumnMean(colName: String, df: DataFrame): Any = {
+  
+  if(!df.columns.contains(colName)){
+      println("There is no such column")
+      return 0
+  }
+  if(df.schema(colName).dataType.typeName == "string"){
+    println("This is string column")
+    return 0
+  }
+      
+    return df.select(avg(col(colName))).first.get(0)
+      
+}
+
+// COMMAND ----------
+
+CountColumnMean("duration",df)
+
+// COMMAND ----------
+
 
